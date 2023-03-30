@@ -12,6 +12,7 @@ try {
   console.log(error);
 }
 
+app.use(express.json());
 app.use(userRoutes);
 
 app.listen(5000, () => console.log("server is running"));
