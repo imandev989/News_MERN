@@ -38,8 +38,17 @@ export const Register = async (req, res) => {
 
 export const Login = async (req, res) => {
   try {
-    res.json("login");
+    const user = await Users.findAll({
+      where: {
+        email: req.body.email,
+      },
+    });
+    const match = await bcrypt.compare(req.body.password, user[0].password);
+    if (!match) {
+      return res.json({ error: "پسورد اشتباه هست" });
+    }
+    res.json({ message: "شما با موفقیت وارد شدید" });
   } catch (error) {
-    res.json(error);
+    res.json({ error: "کاربر وجود ندارد" });
   }
 };
