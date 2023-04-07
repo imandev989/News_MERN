@@ -47,7 +47,17 @@ export const Login = async (req, res) => {
     if (!match) {
       return res.json({ error: "پسورد اشتباه هست" });
     }
-    res.json({ message: "شما با موفقیت وارد شدید" });
+    const userId = user[0].id;
+    const name = user[0].name;
+    const email = user[0].email;
+    const isAdmin = user[0].isAdmin;
+    res.json({
+      userId,
+      name,
+      email,
+      isAdmin,
+      message: "شما با موفقیت وارد شدید",
+    });
   } catch (error) {
     res.json({ error: "کاربر وجود ندارد" });
   }
