@@ -1,5 +1,6 @@
 import Users from "../models/userModel.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -47,16 +48,45 @@ export const Login = async (req, res) => {
     if (!match) {
       return res.json({ error: "پسورد اشتباه هست" });
     }
+    // console.log(user);
+    // console.log(user.name);
+    // console.log(user.email);
+    // console.log(user[0].isAdmin);
+
     const userId = user[0].id;
     const name = user[0].name;
     const email = user[0].email;
     const isAdmin = user[0].isAdmin;
+    const accessToken = jwt.sign(
+      { userId, name, email, isAdmin },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "45s",
+      }
+    );
+    const refreshToken = jwt.sign(
+      { userId, name, email, isAdmin },
+      process.env.REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+    await Users.update(
+      { refresh_token: refreshToken },
+      {
+        where: {
+          id: userId,
+        },
+      }
+    );
+    // console.log(accessToken);
     res.json({
       userId,
       name,
       email,
       isAdmin,
-      message: "شما با موفقیت وارد شدید",
+      accessToken,
+      msg: "شما با موفقیت وارد شدید",
     });
   } catch (error) {
     res.json({ error: "کاربر وجود ندارد" });
