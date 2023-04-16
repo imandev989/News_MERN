@@ -96,3 +96,27 @@ export const Login = async (req, res) => {
     res.json({ error: "کاربر وجود ندارد" });
   }
 };
+
+export const Logout = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) return res.json("توکن پیدا نشد");
+    const user = await Users.findOne({ refresh_token: refreshToken });
+    if (!user) return res.json("کاربر پیدا نشد");
+    const clr = null;
+    await Users.update(
+      {
+        refresh_token: clr,
+      },
+      {
+        where: {
+          id: user.id,
+        },
+      }
+    );
+    res.clearCookie("refreshToken");
+    res.json("خروج موفقیت آمیز بود");
+  } catch (error) {
+    console.log(error);
+  }
+};
