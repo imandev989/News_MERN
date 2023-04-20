@@ -135,8 +135,7 @@ export const deleteUser = async (req, res) => {
           id: req.params.id,
         },
       });
-      res.json({message:"کاربر با موفقیت حذف شد"})
-
+      res.json({ message: "کاربر با موفقیت حذف شد" });
     } catch (error) {
       console.log(error);
     }
@@ -144,4 +143,17 @@ export const deleteUser = async (req, res) => {
     res.json({ error: error });
   }
   // res.json("deleteUser");
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { name, email, password, confPassword, isAdmin } = req.body;
+    // console.log("FIRST" , name, email, password, confPassword, isAdmin )
+    if (password !== confPassword) {
+      return res.json({ error: "پسورد و تکرار آن با هم برابر نمی باشند" });
+    }
+    // res.json("updateUser");
+  } catch (error) {
+    console.log(error);
+  }
 };
