@@ -1,6 +1,7 @@
 import Users from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import path from "path";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -146,14 +147,80 @@ export const deleteUser = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
+  const { name, email, password, confPassword, isAdmin } = req.body;
+  // console.log("FIRST" , name, email, password, confPassword, isAdmin )
+  if (password !== confPassword) {
+    return res.json({ error: "پسورد و تکرار آن با هم برابر نمی باشند" });
+  }
+  const salt = await bcrypt.genSalt();
+  const hashPassword = await bcrypt.hash(password, salt);
+
+  // res.json("updateUser");
   try {
-    const { name, email, password, confPassword, isAdmin } = req.body;
-    // console.log("FIRST" , name, email, password, confPassword, isAdmin )
-    if (password !== confPassword) {
-      return res.json({ error: "پسورد و تکرار آن با هم برابر نمی باشند" });
-    }
-    // res.json("updateUser");
+    await Users.update(
+      {
+        name: name,
+        email: email,
+        password: hashPassword,
+        isAdmin: isAdmin,
+      },
+      {
+        where: {
+          id: req.body.id,
+        },
+      }
+    );
+    res.json({ message: "ویرایش موفقیت آمیز بود" });
   } catch (error) {
     console.log(error);
   }
 };
+
+// export const updateProfile = async (req, res) => {
+//   const avatar = await Users.findOne({
+//     where: {
+//       id: req.params.id,
+//     },
+//   });
+//   if (!avatar) return res.status(404).json({ message: "کاربری پیدا نشد" });
+//   let fileName = "";
+//   if (req.files === null) {
+//     fileName = avatar.image;
+//   } else {
+//     const file = req.files.file;
+//     const fileSize = file.data.length;
+//     const ext = path.extname(file.name);
+//     let dateNow = Math.round(Date.now());
+//     const fileName = dateNow + ext;
+//     console.log(fileName);
+//     console.log(ext);
+//     console.log(file);
+//     res.json("upload");
+//   }
+
+//   res.json(avatar);
+// };
+
+
+export const updateProfile = async(req,res)=>{
+  const avatar = await Users.findOne({
+    where: {
+      id: req.params.id
+    }
+  })
+
+  if(!avatar) return res.status(404).json({msg: "کاربری پیدا نشد"})
+  
+  let fileName = "";
+  if(req.files === null){
+    fileName = avatar.image
+  }else{
+    const file = req.files.file
+    const fileSize = file.data.length;
+    const ext = path.extname(file.name)
+    let dateNow = Math.round(Date.now());
+    const fileName = dateNow + ext
+    
+    res.json("upload")
+  }
+}

@@ -3,6 +3,7 @@ import db from "./config/Database.js";
 import userRoutes from "./routes/userRoutes.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import fileUpload from "express-fileupload";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ try {
 }
 
 app.use(express.json());
+app.use(fileUpload());
 app.use(cookieParser());
 app.use(userRoutes);
 

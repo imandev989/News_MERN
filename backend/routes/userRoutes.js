@@ -6,6 +6,7 @@ import {
   Register,
   deleteUser,
   updateUser,
+  updateProfile
 } from "../controllers/UserController.js";
 import { verifyToken } from "../middleware/VerifyToken.js";
 import { refreshToken } from "../controllers/RefreshToken.js";
@@ -18,6 +19,7 @@ router.post("/api/users/register", Register);
 router.get("/api/users/login", Login);
 router.delete("/api/users/logout", verifyToken, Logout);
 router.delete("/api/users/:id", verifyToken, deleteUser);
+router.put("/api/users/profile/:id", verifyToken, updateProfile)
 router.put("/api/users/:id", verifyToken, updateUser);
 
 export default router;
