@@ -201,26 +201,36 @@ export const updateUser = async (req, res) => {
 //   res.json(avatar);
 // };
 
-
-export const updateProfile = async(req,res)=>{
+export const updateProfile = async (req, res) => {
   const avatar = await Users.findOne({
     where: {
-      id: req.params.id
-    }
-  })
+      id: req.params.id,
+    },
+  });
 
-  if(!avatar) return res.status(404).json({msg: "کاربری پیدا نشد"})
-  
+  if (!avatar) return res.status(404).json({ msg: "کاربری پیدا نشد" });
+
   let fileName = "";
-  if(req.files === null){
-    fileName = avatar.image
-  }else{
-    const file = req.files.file
+  if (req.files === null) {
+    fileName = avatar.image;
+  } else {
+    const file = req.files.file;
     const fileSize = file.data.length;
-    const ext = path.extname(file.name)
+    const ext = path.extname(file.name);
     let dateNow = Math.round(Date.now());
-    const fileName = dateNow + ext
+    const fileName = dateNow + ext;
+    const allowedType = [".png", ".jpg", ".jpeg"];
+    if (!allowedType.includes(ext.toLowerCase())) {
+      return res.json("عکس معتبر نیست - فرمت های مجاز jpeg-jpg-png");
+    }
+    if (fileSize > 1000000)
+      return res.json("حجم عکس نباید بیشتر از ۱ مگابایت باشد");
+
+    file.mv(`./public/avatars/${fileName}`, (err) => {
+      if (err) return res.json({ msg: err.message });
+    });
+
+    const { name, password, confPassword } = req.body;
     
-    res.json("upload")
   }
-}
+};
